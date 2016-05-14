@@ -9,14 +9,15 @@
 checksums 一个仓库的例子：
 
 ```
-githubsum kuleyang/githubsum v0.1.0
+githubsum kuleyang githubsum v0.2.0
 ```
 
 将会打印出sha256和rmd160：
 
 ```
-sha256: 863ce994a8a9a276f3ea8a6a395b33015540cccf08c8e419223aa8253ed42eb2
-rmd160: 8135a086a7ba075d5ce3596caaa46cd21705bb64
+file: ~/Downloads/kuleyang-githubsum-v0.2.0.tar.gz
+sha256: 133af3abcc080e128cd411c9349b0a9b8367768efd586081d13b61485595ebe3
+rmd160: a779716d0f46cd6d4b29908ef3982cedc72d9e61
 ```
 
 ## 安装
@@ -25,6 +26,6 @@ rmd160: 8135a086a7ba075d5ce3596caaa46cd21705bb64
 
 ```
 sudo portindex
-sudo port install ghsum
+sudo port install githubsum
 ```
 
