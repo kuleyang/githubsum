@@ -5,7 +5,7 @@ use warnings;
 
 use Getopt::Long::Descriptive;
 
-use constant VERSION => '0.1.0';
+use constant VERSION => '0.2.0';
 
 #
 # return the tarball url for the project/tag
@@ -13,21 +13,42 @@ use constant VERSION => '0.1.0';
 
 sub url_for
 {
-    my ($project, $tag) = @_;
+    my ($whoname, $project, $tag) = @_;
 
-    return "https://github.com/$project/tarball/$tag";
+    return "https://github.com/$whoname/$project/tarball/$tag";
+}
+
+# 
+# reutrn download file path  
+# 
+
+sub file_for
+{
+    my ($whoname, $project, $tag) = @_;
+    return "~/Downloads/$whoname-$project-$tag.tar.gz";
+}
+
+# 
+# void download to file path  
+# 
+
+sub download_file
+{
+    my ($url, $file) = @_;
+    `wget -q -nc -O $file $url --no-check-certificate `;
 }
 
 #
 # return the checksum of specified type of data at url
 #
 
+
 sub checksum
 {
-    my ($url, $type) = @_;
-    my $output = `wget -q -O - $url --no-check-certificate | openssl $type`;
+    my ($file, $type) = @_;
+    my $output = `openssl $type $file`;
 
-    $output =~ s/^\(stdin\)= (.*)\n$/$1/;
+    $output =~ s/^.*\(.*\)= (.*)\n$/$1/;
 
     return $output;
 }
@@ -38,11 +59,8 @@ sub checksum
 
 sub print_checksum
 {
-    my ($project, $tag, $type) = @_;
-
-    my $url = url_for($project, $tag);
-    my $checksum = checksum($url, $type);
-
+    my ($file, $type) = @_;
+    my $checksum = checksum($file, $type);
     print "$type: $checksum\n";
 }
 
@@ -55,10 +73,15 @@ my ($opt, $usage) = describe_options(
     ['help', 'print usage information']
 );
 
-my ($project, $tag) = @ARGV;
+my ($whoname, $project, $tag) = @ARGV;
 
-print($usage->text), exit if $opt->help || !$project || !$tag;
+print($usage->text), exit if $opt->help || !$whoname || !$project || !$tag;
 
-print_checksum($project, $tag, 'sha256');
-print_checksum($project, $tag, 'rmd160');
+my $url = url_for($whoname, $project, $tag);
+my $file = file_for($whoname, $project, $tag);
+download_file($url, $file);
+
+print "file: $file\n";
+print_checksum($file, 'sha256');
+print_checksum($file, 'rmd160');
 
